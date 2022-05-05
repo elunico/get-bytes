@@ -1,31 +1,32 @@
 #ifndef ENDIANS_H
 #define ENDIANS_H
 
+#include <array>
 #include <cstdint>
 #include <iostream>
-#include <vector>
 
-template <typename Integral> std::vector<uint8_t> get_le_bytes(Integral value) {
-  std::vector<uint8_t> result{};
-  result.reserve(sizeof(value));
+template <typename Integral, std::size_t count = sizeof(Integral)>
+std::array<uint8_t, count> get_le_bytes(Integral value) {
+  std::array<uint8_t, count> result{};
   for (auto i = 0; i < sizeof(value); ++i) {
-    result.push_back(static_cast<uint8_t>(value & 0xFF));
+    result[i] = static_cast<uint8_t>(value & 0xFF);
     value >>= 8;
   }
   return result;
 }
 
-template <typename Integral> std::vector<uint8_t> get_be_bytes(Integral value) {
+template <typename Integral, std::size_t count = sizeof(Integral)>
+std::array<uint8_t, count> get_be_bytes(Integral value) {
   auto result = get_le_bytes(value);
   std::reverse(result.begin(), result.end());
   return result;
 }
 
-template <> std::vector<uint8_t> get_le_bytes<uint8_t>(uint8_t value) {
+template <> std::array<uint8_t, 1> get_le_bytes<uint8_t, 1>(uint8_t value) {
   return {value};
 }
 
-template <> std::vector<uint8_t> get_be_bytes<uint8_t>(uint8_t value) {
+template <> std::array<uint8_t, 1> get_be_bytes<uint8_t, 1>(uint8_t value) {
   return {value};
 }
 
